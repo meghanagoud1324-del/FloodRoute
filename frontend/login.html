@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In / Register - FLOODROUTE | Hyderabad GHMC</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body style="background: linear-gradient(135deg, #0A1926 0%, #102A43 50%, #168AAD 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+
+  <div class="card" style="max-width: 460px; width: 100%; padding: 36px 32px; box-shadow: var(--shadow-lg);">
+    <!-- Brand Header -->
+    <div style="text-align: center; margin-bottom: 24px;">
+      <div class="brand-icon" style="width: 48px; height: 48px; font-size: 24px; margin: 0 auto 12px;">🌊</div>
+      <h2 style="font-size: 22px; font-weight: 800; color: var(--navy);">FLOODROUTE</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Hyderabad GHMC Flood Intelligence Platform</p>
+    </div>
+
+    <!-- Segmented Tab Controls -->
+    <div class="segmented-control" style="margin-bottom: 20px;">
+      <button class="segment-btn active" id="tabLoginBtn" type="button">Sign In</button>
+      <button class="segment-btn" id="tabRegisterBtn" type="button">Citizen Register</button>
+    </div>
+
+    <!-- Sign In Form -->
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="form-label" for="loginUsername">Username</label>
+        <input type="text" id="loginUsername" class="form-control" placeholder="Enter username" required value="admin" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" class="form-control" placeholder="Enter password" required value="admin123" />
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">
+        Sign In to FloodRoute
+      </button>
+
+      <!-- Quick Demo Account Fillers -->
+      <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-grey); text-align: center;">
+        <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; display: block; margin-bottom: 8px;">
+          Demonstration Evaluation Accounts
+        </span>
+        <div style="display: flex; gap: 8px; justify-content: center;">
+          <button type="button" class="btn btn-sm btn-outline" id="btnFillAdmin">GHMC Admin (admin/admin123)</button>
+          <button type="button" class="btn btn-sm btn-outline" id="btnFillCitizen">Citizen (citizen/citizen123)</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Register Form (Hidden by default) -->
+    <form id="registerForm" style="display: none;">
+      <div class="form-group">
+        <label class="form-label" for="regFullName">Full Name</label>
+        <input type="text" id="regFullName" class="form-control" placeholder="e.g. Sridhar Reddy" required />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="regUsername">Username</label>
+        <input type="text" id="regUsername" class="form-control" placeholder="Choose username" required />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="regEmail">Email Address</label>
+        <input type="email" id="regEmail" class="form-control" placeholder="name@domain.com" required />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="regPhone">Mobile Number (Optional)</label>
+        <input type="tel" id="regPhone" class="form-control" placeholder="+91-9876543210" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="regPassword">Password</label>
+        <input type="password" id="regPassword" class="form-control" placeholder="At least 6 characters" required />
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">
+        Create Citizen Account
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="index.html" style="font-size: 13px; color: var(--text-secondary);">← Return to Public Homepage</a>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabLogin = document.getElementById('tabLoginBtn');
+      const tabRegister = document.getElementById('tabRegisterBtn');
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+
+      tabLogin.addEventListener('click', () => {
+        tabLogin.classList.add('active');
+        tabRegister.classList.remove('active');
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+      });
+
+      tabRegister.addEventListener('click', () => {
+        tabRegister.classList.add('active');
+        tabLogin.classList.remove('active');
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+      });
+
+      // Quick Demo Fillers
+      document.getElementById('btnFillAdmin').addEventListener('click', () => {
+        document.getElementById('loginUsername').value = 'admin';
+        document.getElementById('loginPassword').value = 'admin123';
+        showToast('Filled GHMC Admin credentials', 'info');
+      });
+
+      document.getElementById('btnFillCitizen').addEventListener('click', () => {
+        document.getElementById('loginUsername').value = 'citizen';
+        document.getElementById('loginPassword').value = 'citizen123';
+        showToast('Filled Citizen credentials', 'info');
+      });
+
+      // Login Form Submit
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const u = document.getElementById('loginUsername').value.trim();
+        const p = document.getElementById('loginPassword').value;
+
+        try {
+          showToast('Authenticating credentials...', 'info');
+          const res = await FloodAPI.login(u, p);
+          showToast(`Welcome, ${res.fullName || res.username}!`, 'success');
+
+          setTimeout(() => {
+            if (res.role === 'ROLE_ADMIN') {
+              window.location.href = 'admin.html';
+            } else {
+              window.location.href = 'dashboard.html';
+            }
+          }, 800);
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+
+      // Register Form Submit
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+          fullName: document.getElementById('regFullName').value.trim(),
+          username: document.getElementById('regUsername').value.trim(),
+          email: document.getElementById('regEmail').value.trim(),
+          phone: document.getElementById('regPhone').value.trim(),
+          password: document.getElementById('regPassword').value
+        };
+
+        try {
+          showToast('Registering user in MySQL...', 'info');
+          await FloodAPI.register(payload);
+          showToast('Registration successful! Please sign in.', 'success');
+          tabLogin.click();
+          document.getElementById('loginUsername').value = payload.username;
+          document.getElementById('loginPassword').value = payload.password;
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

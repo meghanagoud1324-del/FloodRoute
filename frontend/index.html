@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLOODROUTE - Smart Urban Flood Intelligence & Safe Route Planning | Hyderabad GHMC</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+  <!-- Top Public Navbar -->
+  <header class="public-nav">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="brand-icon">🌊</div>
+      <div>
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--navy); letter-spacing: 0.5px;">FLOODROUTE</h2>
+        <span style="font-size: 11px; color: var(--ocean-blue); font-weight: 600;">Hyderabad GHMC Urban Flood Platform</span>
+      </div>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="index.html" style="color: var(--ocean-blue);">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="flood-map.html">Flood Map</a></li>
+      <li><a href="safe-routes.html">Safe Routes</a></li>
+      <li><a href="risk-analysis.html">Risk Engine</a></li>
+      <li><a href="simulation.html">Simulation</a></li>
+      <li><a href="alerts.html">Live Alerts</a></li>
+    </ul>
+
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <a href="report.html" class="btn btn-secondary">Report Waterlogging</a>
+      <a href="login.html" class="btn btn-primary">Sign In / Admin</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="badge-live" style="margin-bottom: 16px;">
+          <span class="pulse-dot"></span> Active Monsoon Telemetry • GHMC Hyderabad
+        </div>
+        <h1>Navigate Smarter.<br/><span style="color: #64D2FF;">Stay Safer.</span></h1>
+        <p>
+          FLOODROUTE is an intelligent, risk-aware urban navigation and flood intelligence platform designed specifically for Greater Hyderabad Municipal Corporation (GHMC). Avoid submerged underpasses, bypass chronic waterlogging bottlenecks, and commute safely during heavy monsoon storms.
+        </p>
+
+        <div class="hero-actions">
+          <a href="flood-map.html" class="btn btn-primary" style="padding: 14px 28px; font-size: 15px;">
+            🗺️ Explore Flood Map
+          </a>
+          <a href="safe-routes.html" class="btn btn-secondary" style="padding: 14px 28px; font-size: 15px;">
+            🚦 Find Safer Route
+          </a>
+          <a href="report.html" class="btn btn-outline" style="padding: 14px 28px; font-size: 15px; color: white; border-color: rgba(255,255,255,0.4);">
+            📢 Report Waterlogging
+          </a>
+        </div>
+      </div>
+
+      <!-- Preview Card with Live Weather -->
+      <div class="hero-card-preview">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 12px;">
+          <h3 style="font-size: 16px; font-weight: 700; color: white;">Hyderabad Live Weather</h3>
+          <span class="badge badge-low" style="background: rgba(45, 173, 121, 0.2); color: #4EEDA4;">Open-Meteo Synced</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div>
+            <span style="font-size: 12px; color: #9FB3C8;">Temperature</span>
+            <h4 id="heroTemp" style="font-size: 24px; color: white; font-weight: 700;">26.4 °C</h4>
+          </div>
+          <div>
+            <span style="font-size: 12px; color: #9FB3C8;">Current Rain</span>
+            <h4 id="heroPrecip" style="font-size: 24px; color: #64D2FF; font-weight: 700;">22.5 mm/hr</h4>
+          </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 14px; margin-bottom: 18px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px;">
+            <span style="color: #CBD2D9;">Monsoon Risk Index:</span>
+            <span style="color: #FFB347; font-weight: 700;">ELEVATED (68/100)</span>
+          </div>
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden;">
+            <div style="width: 68%; height: 100%; background: #FFB347;"></div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; font-size: 12px; color: #D9E2EC;">
+          <span>⚠️ 3 High Risk Underpasses Active</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How The System Works Section -->
+  <section style="max-width: 1240px; margin: 60px auto; padding: 0 24px;">
+    <div style="text-align: center; margin-bottom: 48px;">
+      <h2 style="font-size: 30px; font-weight: 800; color: var(--navy); margin-bottom: 12px;">How FloodRoute Protects Hyderabad Commuters</h2>
+      <p style="font-size: 15px; color: var(--text-secondary); max-width: 640px; margin: 0 auto;">
+        From real-time citizen crowdsourcing to graph-based risk routing, our pipeline turns raw rainfall and hazard telemetry into actionable travel safety.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;">
+      <div class="card" style="text-align: center;">
+        <div style="width: 56px; height: 56px; background: var(--light-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 16px;">
+          📍
+        </div>
+        <h3 style="font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px;">1. Identify Hazards</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+          Interactive Hyderabad GIS map plots verified citizen reports, sensor data, and chronic underpass bottlenecks in real time.
+        </p>
+      </div>
+
+      <div class="card" style="text-align: center;">
+        <div style="width: 56px; height: 56px; background: var(--amber-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 16px;">
+          ⚖️
+        </div>
+        <h3 style="font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px;">2. Dynamic Risk Scoring</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+          Multi-factor mathematical engine weights rainfall intensity, water depth, drainage vulnerability, and historical frequency.
+        </p>
+      </div>
+
+      <div class="card" style="text-align: center;">
+        <div style="width: 56px; height: 56px; background: var(--green-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 16px;">
+          🛣️
+        </div>
+        <h3 style="font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px;">3. Safe Route Search</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+          Dijkstra and A* graph algorithms calculate risk-penalized edge costs, providing safe alternative detours that avoid submerged points.
+        </p>
+      </div>
+
+      <div class="card" style="text-align: center;">
+        <div style="width: 56px; height: 56px; background: var(--red-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 16px;">
+          📢
+        </div>
+        <h3 style="font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px;">4. Citizen Empowerment</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+          Citizens upload geo-tagged photo reports. GHMC engineers verify submissions to trigger instant smart alerts.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Map Preview Section -->
+  <section style="background-color: var(--white); border-top: 1px solid var(--border-grey); border-bottom: 1px solid var(--border-grey); padding: 60px 24px;">
+    <div style="max-width: 1240px; margin: 0 auto;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <span class="badge badge-high" style="margin-bottom: 8px;">Live GIS Preview</span>
+          <h2 style="font-size: 26px; font-weight: 800; color: var(--navy);">Hyderabad Flood Map Preview</h2>
+          <p style="font-size: 14px; color: var(--text-secondary);">Demonstration locations across GHMC zones (Tolichowki, Malakpet, Begumpet, LB Nagar, Kukatpally)</p>
+        </div>
+        <a href="flood-map.html" class="btn btn-primary">Open Full Interactive Map ➔</a>
+      </div>
+
+      <div style="height: 420px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-grey); position: relative;">
+        <div id="homePreviewMap" style="width: 100%; height: 100%;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Flood Safety Information Section -->
+  <section style="max-width: 1240px; margin: 60px auto; padding: 0 24px;">
+    <div class="card" style="background: linear-gradient(135deg, #F0F7FB 0%, #FFFFFF 100%); border-left: 6px solid var(--ocean-blue);">
+      <h3 style="font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 16px;">GHMC Monsoon Commuter Safety Advisory</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <div>
+          <h4 style="font-size: 15px; color: var(--red); font-weight: 700; margin-bottom: 6px;">🚫 Turn Around, Don't Drown</h4>
+          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+            Just 15 cm of moving water can stall a two-wheeler, while 30 cm can float small cars. Never attempt crossing a submerged underpass.
+          </p>
+        </div>
+        <div>
+          <h4 style="font-size: 15px; color: var(--amber); font-weight: 700; margin-bottom: 6px;">⚡ Electrical Hazard Caution</h4>
+          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+            Stay clear of fallen electric poles, open feeder boxes, and cables touching standing water along flooded pedestrian pathways.
+          </p>
+        </div>
+        <div>
+          <h4 style="font-size: 15px; color: var(--green); font-weight: 700; margin-bottom: 6px;">📞 Emergency Helplines</h4>
+          <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
+            GHMC Disaster Management: <strong>040-21111111</strong> • Hyderabad Traffic Police: <strong>100</strong> or WhatsApp <strong>9490616555</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <div class="brand-icon" style="width: 28px; height: 28px; font-size: 14px;">🌊</div>
+          <h3 style="color: white; font-size: 18px; font-weight: 700;">FLOODROUTE</h3>
+        </div>
+        <p style="font-size: 13px; line-height: 1.6; color: #9FB3C8; max-width: 340px;">
+          Smart Urban Flood Intelligence & Risk-Based Safe Route Planning Platform for Hyderabad, GHMC. Built with Spring Boot, MySQL, and GIS mapping.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dashboard.html">Flood Dashboard</a></li>
+          <li><a href="flood-map.html">Interactive Map</a></li>
+          <li><a href="safe-routes.html">Safe Route Planner</a></li>
+          <li><a href="report.html">Report Waterlogging</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Intelligence</h4>
+        <ul>
+          <li><a href="risk-analysis.html">Risk Engine Formula</a></li>
+          <li><a href="simulation.html">Rainfall Simulator</a></li>
+          <li><a href="history.html">Historical Analysis</a></li>
+          <li><a href="alerts.html">Smart Flood Alerts</a></li>
+          <li><a href="admin.html">Admin Moderation</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Technology</h4>
+        <ul>
+          <li><span style="color: #CBD2D9; font-size: 13px;">Java 21 + Spring Boot 3</span></li>
+          <li><span style="color: #CBD2D9; font-size: 13px;">MySQL 8 Relational DB</span></li>
+          <li><span style="color: #CBD2D9; font-size: 13px;">Leaflet.js + OSM</span></li>
+          <li><span style="color: #CBD2D9; font-size: 13px;">Dijkstra / A* Search</span></li>
+          <li><span style="color: #CBD2D9; font-size: 13px;">Open-Meteo Weather API</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 FLOODROUTE Platform • Designed for Greater Hyderabad Municipal Corporation (GHMC)</span>
+      <span style="color: #CBD2D9;">College Engineering Capstone Demonstration Project</span>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Fetch live weather for hero banner
+      const weather = await FloodAPI.fetchLiveHyderabadWeather();
+      if (document.getElementById('heroTemp')) document.getElementById('heroTemp').textContent = `${weather.temperature_2m || 26.5} °C`;
+      if (document.getElementById('heroPrecip')) document.getElementById('heroPrecip').textContent = `${weather.precipitation || 22.5} mm/hr`;
+
+      // Mini Leaflet Map Preview
+      const previewMap = L.map('homePreviewMap', { center: [17.4100, 78.4450], zoom: 12, zoomControl: false });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(previewMap);
+
+      const demoPoints = [
+        { name: 'Tolichowki', coords: [17.4011, 78.4124], sev: 'CRITICAL', color: '#D94D4D' },
+        { name: 'Malakpet', coords: [17.3753, 78.4988], sev: 'CRITICAL', color: '#D94D4D' },
+        { name: 'Begumpet', coords: [17.4447, 78.4664], sev: 'HIGH', color: '#E67E22' },
+        { name: 'LB Nagar', coords: [17.3457, 78.5522], sev: 'CRITICAL', color: '#D94D4D' },
+        { name: 'Kukatpally', coords: [17.4849, 78.4138], sev: 'MODERATE', color: '#E5A12B' }
+      ];
+
+      demoPoints.forEach(p => {
+        L.circle(p.coords, { color: p.color, fillColor: p.color, fillOpacity: 0.25, radius: 450 }).addTo(previewMap);
+        L.marker(p.coords, {
+          icon: L.divIcon({
+            className: `custom-pin pin-${p.sev.toLowerCase()}`,
+            html: `<span>${p.sev.charAt(0)}</span>`,
+            iconSize: [26, 26]
+          })
+        }).addTo(previewMap).bindPopup(`<strong>${p.name}</strong><br/>Severity: ${p.sev}`);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rainfall Impact Simulator - FLOODROUTE | Hyderabad GHMC</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">🌊</div>
+        <div class="brand-info">
+          <h2>FLOODROUTE</h2>
+          <span>Hyderabad GHMC</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Navigation</div>
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Home Overview</span>
+        </a>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Flood Dashboard</span>
+        </a>
+        <a href="flood-map.html" class="nav-item">
+          <span class="nav-icon">🗺️</span>
+          <span>Interactive Map</span>
+        </a>
+        <a href="safe-routes.html" class="nav-item">
+          <span class="nav-icon">🚦</span>
+          <span>Safe Route Finder</span>
+        </a>
+
+        <div class="nav-section-title">Analysis & Tools</div>
+        <a href="risk-analysis.html" class="nav-item">
+          <span class="nav-icon">⚖️</span>
+          <span>Risk Engine Formula</span>
+        </a>
+        <a href="simulation.html" class="nav-item active">
+          <span class="nav-icon">🌧️</span>
+          <span>Rainfall Simulator</span>
+        </a>
+        <a href="history.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Historical Trends</span>
+        </a>
+        <a href="alerts.html" class="nav-item">
+          <span class="nav-icon">🔔</span>
+          <span>Smart Flood Alerts</span>
+        </a>
+
+        <div class="nav-section-title">Actions</div>
+        <a href="report.html" class="nav-item">
+          <span class="nav-icon">📢</span>
+          <span>Report Waterlogging</span>
+        </a>
+        <a href="admin.html" id="adminNavItem" class="nav-item">
+          <span class="nav-icon">🛡️</span>
+          <span>Admin Moderation</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="user-meta">
+            <span class="user-name" id="sessionUserName">Guest Citizen</span>
+            <span class="user-role" id="sessionUserRole">Visitor</span>
+          </div>
+          <button id="logoutBtn" title="Sign Out" style="background: none; border: none; color: #9FB3C8; cursor: pointer; font-size: 16px;">⎋</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileMenuToggle">☰</button>
+          <div class="page-title">
+            <h1>Rainfall Impact Simulator</h1>
+            <p>Simulate downpours, test drainage resilience, and forecast road inundation scenarios</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <span class="badge badge-high">Simulation Environment</span>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Transparent Disclaimer -->
+        <div class="disclaimer-banner" style="border-left-color: var(--orange);">
+          <span style="font-size: 20px;">🌧️</span>
+          <p>
+            <strong>Simulation Model Transparency:</strong> These results are synthetic hydrological projections based on elevation and drainage indices. They demonstrate scenario testing and are strictly differentiated from real live ground measurements.
+          </p>
+        </div>
+
+        <!-- Simulation Parameters & KPI Projection Summary -->
+        <div style="display: grid; grid-template-columns: 360px 1fr; gap: 24px; align-items: start;">
+          <!-- Controls Panel -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>🎛️</span> Scenario Controls
+              </div>
+            </div>
+
+            <!-- Rainfall Intensity Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <span class="slider-title">Rainfall Rate (Intensity)</span>
+                <span class="slider-val-badge" id="simRainBadge">45 mm/hr</span>
+              </div>
+              <input type="range" id="simRainSlider" class="custom-range" min="5" max="120" step="5" value="45" />
+              <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 4px;">
+                <span>Light (10mm)</span>
+                <span>Moderate (35mm)</span>
+                <span>Heavy (65mm)</span>
+                <span>Cloudburst (100mm+)</span>
+              </div>
+            </div>
+
+            <!-- Duration Slider -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <span class="slider-title">Rainfall Duration</span>
+                <span class="slider-val-badge" id="simDurBadge">2 hr(s)</span>
+              </div>
+              <input type="range" id="simDurationSlider" class="custom-range" min="1" max="6" step="1" value="2" />
+            </div>
+
+            <!-- Locality Selector -->
+            <div class="form-group">
+              <label class="form-label" for="simLocalitySelect">Focus Locality Zone</label>
+              <select id="simLocalitySelect" class="form-control">
+                <option value="ALL" selected>All Greater Hyderabad Localities</option>
+                <option value="Tolichowki">Tolichowki</option>
+                <option value="Malakpet">Malakpet</option>
+                <option value="Begumpet">Begumpet</option>
+                <option value="LB Nagar">LB Nagar</option>
+                <option value="Uppal">Uppal</option>
+                <option value="Kukatpally">Kukatpally</option>
+                <option value="Ameerpet">Ameerpet</option>
+                <option value="Mehdipatnam">Mehdipatnam</option>
+                <option value="Gachibowli">Gachibowli</option>
+                <option value="Miyapur">Miyapur</option>
+              </select>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 14px;">
+              <button id="btnRunSimulation" class="btn btn-primary" style="flex: 2;">⚡ Run Simulation</button>
+              <button id="btnResetSimulation" class="btn btn-outline" style="flex: 1;">Reset</button>
+            </div>
+          </div>
+
+          <!-- Scenario Projection Cards -->
+          <div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
+              <div class="metric-card metric-critical">
+                <div class="metric-icon-box">🚫</div>
+                <div class="metric-data">
+                  <h3 id="simCritCount">2</h3>
+                  <p>Projected Critical Roads</p>
+                  <div class="metric-subtext">>60 cm estimated depth</div>
+                </div>
+              </div>
+
+              <div class="metric-card metric-high">
+                <div class="metric-icon-box">⚠️</div>
+                <div class="metric-data">
+                  <h3 id="simHighCount">3</h3>
+                  <p>Projected High-Risk Roads</p>
+                  <div class="metric-subtext">35 - 60 cm depth</div>
+                </div>
+              </div>
+
+              <div class="metric-card metric-info">
+                <div class="metric-icon-box">🌧️</div>
+                <div class="metric-data">
+                  <h3 id="simAccumText">90 mm total</h3>
+                  <p>Total Storm Influx</p>
+                  <div class="metric-subtext" id="simScenarioLabel">Heavy Monsoon Downpour</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Simulation Map -->
+            <div style="height: 380px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-grey); box-shadow: var(--shadow-sm); position: relative;">
+              <div id="simulationMap" style="width: 100%; height: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulated Locality Inundation Chart -->
+        <section class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div class="card-title">
+              <span>📊</span> Projected Water Depth & Risk Index across Hyderabad Localities
+            </div>
+            <span style="font-size: 12px; color: var(--text-muted);">Simulated Scenario Comparison</span>
+          </div>
+
+          <div style="height: 320px; position: relative;">
+            <canvas id="simImpactChart"></canvas>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/simulation.js"></script>
+</body>
+</html>

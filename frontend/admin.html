@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Moderation - FLOODROUTE | GHMC Disaster Management</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">🌊</div>
+        <div class="brand-info">
+          <h2>FLOODROUTE</h2>
+          <span>GHMC Admin Console</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Navigation</div>
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Home Overview</span>
+        </a>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Flood Dashboard</span>
+        </a>
+        <a href="flood-map.html" class="nav-item">
+          <span class="nav-icon">🗺️</span>
+          <span>Interactive Map</span>
+        </a>
+        <a href="safe-routes.html" class="nav-item">
+          <span class="nav-icon">🚦</span>
+          <span>Safe Route Finder</span>
+        </a>
+
+        <div class="nav-section-title">Administration</div>
+        <a href="admin.html" class="nav-item active">
+          <span class="nav-icon">🛡️</span>
+          <span>Report Moderation</span>
+        </a>
+        <a href="alerts.html" class="nav-item">
+          <span class="nav-icon">🔔</span>
+          <span>Issue Emergency Alert</span>
+        </a>
+        <a href="simulation.html" class="nav-item">
+          <span class="nav-icon">🌧️</span>
+          <span>Scenario Simulator</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="user-meta">
+            <span class="user-name" id="sessionUserName">GHMC Admin</span>
+            <span class="user-role" id="sessionUserRole">Administrator</span>
+          </div>
+          <button id="logoutBtn" title="Sign Out" style="background: none; border: none; color: #9FB3C8; cursor: pointer; font-size: 16px;">⎋</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileMenuToggle">☰</button>
+          <div class="page-title">
+            <h1>GHMC Admin Moderation Console</h1>
+            <p>Field verification, report lifecycle audit trail, and spatial DBSCAN clustering management</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button id="btnRecomputeHotspots" class="btn btn-secondary btn-sm">🔄 Recompute Hotspots</button>
+          <a href="flood-map.html" class="btn btn-primary btn-sm">View Live GIS Map</a>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Security Banner -->
+        <div class="disclaimer-banner" style="border-left-color: var(--green);">
+          <span style="font-size: 20px;">🔒</span>
+          <p>
+            <strong>Administrative Clearance Active:</strong> Actions performed here are protected with Spring Security role-based authorization (<code>ROLE_ADMIN</code>) and recorded permanently in MySQL <code>report_status_history</code> audit logs.
+          </p>
+        </div>
+
+        <!-- Moderation KPIs -->
+        <section class="dashboard-metrics-grid" style="margin-bottom: 24px;">
+          <div class="metric-card metric-info">
+            <div class="metric-icon-box">📋</div>
+            <div class="metric-data">
+              <h3 id="adminStatTotal">--</h3>
+              <p>Total Submissions</p>
+            </div>
+          </div>
+
+          <div class="metric-card metric-moderate">
+            <div class="metric-icon-box">⏳</div>
+            <div class="metric-data">
+              <h3 id="adminStatPending">--</h3>
+              <p>Pending Verification</p>
+            </div>
+          </div>
+
+          <div class="metric-card metric-safe">
+            <div class="metric-icon-box">✓</div>
+            <div class="metric-data">
+              <h3 id="adminStatVerified">--</h3>
+              <p>Verified Hazards</p>
+            </div>
+          </div>
+
+          <div class="metric-card metric-critical">
+            <div class="metric-icon-box">🏁</div>
+            <div class="metric-data">
+              <h3 id="adminStatResolved">--</h3>
+              <p>Resolved / Cleared</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Filters Bar -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <span class="filter-label">Filter by Status:</span>
+            <select id="adminStatusFilter" class="select-filter">
+              <option value="ALL">All Reports</option>
+              <option value="PENDING_VERIFICATION">Pending Verification</option>
+              <option value="VERIFIED">Verified</option>
+              <option value="RESOLVED">Resolved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+
+          <div style="font-size: 12px; color: var(--text-muted);">
+            Changes immediately update public route-planning risk weights
+          </div>
+        </div>
+
+        <!-- Reports Moderation Table -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>🛡️</span> All Citizen Reports for Moderation
+            </div>
+          </div>
+
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Report UID</th>
+                  <th>Locality & Stretch</th>
+                  <th>Hazard & Depth</th>
+                  <th>Severity</th>
+                  <th>Status</th>
+                  <th>Submitted By</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminReportsTableBody">
+                <!-- Dynamically populated by admin.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Rejection Modal -->
+  <div class="modal-backdrop" id="rejectModal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Reject Hazard Report</h3>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+          Please state the reason for rejecting this report. This reason will be permanently attached to the audit trail:
+        </p>
+        <div class="form-group">
+          <label class="form-label">Rejection Reason</label>
+          <textarea id="rejectReasonInput" class="form-control" placeholder="e.g. Field team inspected site; road clear and water depth negligible."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline modal-cancel">Cancel</button>
+        <button class="btn btn-danger" id="confirmRejectBtn">Confirm Rejection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit Trail History Modal -->
+  <div class="modal-backdrop" id="auditModal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>Status History & Audit Trail</h3>
+        <button class="modal-close">✕</button>
+      </div>
+      <div class="modal-body" id="auditModalContent">
+        <!-- Dynamically populated by admin.js -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary modal-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

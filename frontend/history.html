@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historical Flood Analysis - FLOODROUTE | Hyderabad GHMC</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">🌊</div>
+        <div class="brand-info">
+          <h2>FLOODROUTE</h2>
+          <span>Hyderabad GHMC</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Navigation</div>
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Home Overview</span>
+        </a>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Flood Dashboard</span>
+        </a>
+        <a href="flood-map.html" class="nav-item">
+          <span class="nav-icon">🗺️</span>
+          <span>Interactive Map</span>
+        </a>
+        <a href="safe-routes.html" class="nav-item">
+          <span class="nav-icon">🚦</span>
+          <span>Safe Route Finder</span>
+        </a>
+
+        <div class="nav-section-title">Analysis & Tools</div>
+        <a href="risk-analysis.html" class="nav-item">
+          <span class="nav-icon">⚖️</span>
+          <span>Risk Engine Formula</span>
+        </a>
+        <a href="simulation.html" class="nav-item">
+          <span class="nav-icon">🌧️</span>
+          <span>Rainfall Simulator</span>
+        </a>
+        <a href="history.html" class="nav-item active">
+          <span class="nav-icon">📈</span>
+          <span>Historical Trends</span>
+        </a>
+        <a href="alerts.html" class="nav-item">
+          <span class="nav-icon">🔔</span>
+          <span>Smart Flood Alerts</span>
+        </a>
+
+        <div class="nav-section-title">Actions</div>
+        <a href="report.html" class="nav-item">
+          <span class="nav-icon">📢</span>
+          <span>Report Waterlogging</span>
+        </a>
+        <a href="admin.html" id="adminNavItem" class="nav-item">
+          <span class="nav-icon">🛡️</span>
+          <span>Admin Moderation</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="user-meta">
+            <span class="user-name" id="sessionUserName">Guest Citizen</span>
+            <span class="user-role" id="sessionUserRole">Visitor</span>
+          </div>
+          <button id="logoutBtn" title="Sign Out" style="background: none; border: none; color: #9FB3C8; cursor: pointer; font-size: 16px;">⎋</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileMenuToggle">☰</button>
+          <div class="page-title">
+            <h1>Historical Flood Analysis</h1>
+            <p>Monsoon trend patterns, multi-year rainfall correlation, and chronic road vulnerability</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <span class="badge badge-low">GHMC Historical Archives</span>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <div class="disclaimer-banner">
+          <p>
+            <strong>Hydrological Data Notice:</strong> Historical records synthesize GHMC flood control archives and monsoon telemetry across past seasons. Useful for identifying infrastructure bottlenecks and planning urban drainage improvements.
+          </p>
+        </div>
+
+        <!-- Locality Filter -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <span class="filter-label">Filter Affected Roads by Locality:</span>
+            <select id="historyLocalityFilter" class="select-filter">
+              <option value="ALL">All Localities</option>
+              <option value="Tolichowki">Tolichowki</option>
+              <option value="Malakpet">Malakpet</option>
+              <option value="Begumpet">Begumpet</option>
+              <option value="LB Nagar">LB Nagar</option>
+              <option value="Uppal">Uppal</option>
+              <option value="Kukatpally">Kukatpally</option>
+              <option value="Mehdipatnam">Mehdipatnam</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid-2x2">
+          <!-- Monthly Rainfall vs Waterlogging Events -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📈</span> Rainfall vs Incident Correlation (Monsoon Cycle)
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="historyTrendChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Recurrence Frequency Bar Chart -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📊</span> Chronic Flood Recurrence by Locality
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="historyRecurrenceChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Frequently Affected Roads Table -->
+        <section class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div class="card-title">
+              <span>🛣️</span> Frequently Flooded Hyderabad Road Corridors & Stagnation Bottlenecks
+            </div>
+          </div>
+
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Road Corridor</th>
+                  <th>Locality</th>
+                  <th>Recurrence Rate</th>
+                  <th>Avg Stagnation</th>
+                  <th>Max Depth</th>
+                  <th>Vulnerability Status</th>
+                </tr>
+              </thead>
+              <tbody id="historicalRoadsBody">
+                <!-- Dynamically populated by history.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/history.js"></script>
+</body>
+</html>

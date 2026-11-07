@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Waterlogging - FLOODROUTE | Citizen Crowdsourced Flood Intelligence</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">🌊</div>
+        <div class="brand-info">
+          <h2>FLOODROUTE</h2>
+          <span>Hyderabad GHMC</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Navigation</div>
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Home Overview</span>
+        </a>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Flood Dashboard</span>
+        </a>
+        <a href="flood-map.html" class="nav-item">
+          <span class="nav-icon">🗺️</span>
+          <span>Interactive Map</span>
+        </a>
+        <a href="safe-routes.html" class="nav-item">
+          <span class="nav-icon">🚦</span>
+          <span>Safe Route Finder</span>
+        </a>
+
+        <div class="nav-section-title">Analysis & Tools</div>
+        <a href="risk-analysis.html" class="nav-item">
+          <span class="nav-icon">⚖️</span>
+          <span>Risk Engine Formula</span>
+        </a>
+        <a href="simulation.html" class="nav-item">
+          <span class="nav-icon">🌧️</span>
+          <span>Rainfall Simulator</span>
+        </a>
+        <a href="history.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Historical Trends</span>
+        </a>
+        <a href="alerts.html" class="nav-item">
+          <span class="nav-icon">🔔</span>
+          <span>Smart Flood Alerts</span>
+        </a>
+
+        <div class="nav-section-title">Actions</div>
+        <a href="report.html" class="nav-item active">
+          <span class="nav-icon">📢</span>
+          <span>Report Waterlogging</span>
+        </a>
+        <a href="admin.html" id="adminNavItem" class="nav-item">
+          <span class="nav-icon">🛡️</span>
+          <span>Admin Moderation</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="user-meta">
+            <span class="user-name" id="sessionUserName">Guest Citizen</span>
+            <span class="user-role" id="sessionUserRole">Visitor</span>
+          </div>
+          <button id="logoutBtn" title="Sign Out" style="background: none; border: none; color: #9FB3C8; cursor: pointer; font-size: 16px;">⎋</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileMenuToggle">☰</button>
+          <div class="page-title">
+            <h1>Citizen Waterlogging Reporting</h1>
+            <p>Empower GHMC and fellow citizens with verified real-time road condition telemetry</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <span class="badge badge-verified">Direct GHMC Gateway</span>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <div class="disclaimer-banner">
+          <p>
+            <strong>Citizen Reporting Guidelines:</strong> Please provide accurate location coordinates and water depth. Submissions undergo algorithmic scoring and GHMC administrative verification before being added to safe navigation routes.
+          </p>
+        </div>
+
+        <!-- Form and Mini Map Grid -->
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; align-items: start;">
+          <!-- Submission Form -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📝</span> Incident Report Submission
+              </div>
+            </div>
+
+            <form id="citizenReportForm">
+              <div class="form-grid">
+                <!-- Reporter Name -->
+                <div class="form-group">
+                  <label class="form-label" for="reporterName">
+                    <span>Reporter Name</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">(Optional)</span>
+                  </label>
+                  <input type="text" id="reporterName" class="form-control" placeholder="e.g. Ramesh Kumar" />
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                  <label class="form-label" for="reporterPhone">
+                    <span>Phone Number</span>
+                    <span style="font-size: 11px; color: var(--text-muted);">(Optional)</span>
+                  </label>
+                  <input type="tel" id="reporterPhone" class="form-control" placeholder="e.g. +91-9876543210" />
+                </div>
+
+                <!-- Locality -->
+                <div class="form-group">
+                  <label class="form-label" for="reportLocality">
+                    <span>Locality</span>
+                    <span class="required">*</span>
+                  </label>
+                  <select id="reportLocality" class="form-control" required>
+                    <option value="" disabled selected>Select Locality</option>
+                    <option value="Tolichowki">Tolichowki</option>
+                    <option value="Malakpet">Malakpet</option>
+                    <option value="Begumpet">Begumpet</option>
+                    <option value="LB Nagar">LB Nagar</option>
+                    <option value="Uppal">Uppal</option>
+                    <option value="Kukatpally">Kukatpally</option>
+                    <option value="Ameerpet">Ameerpet</option>
+                    <option value="Mehdipatnam">Mehdipatnam</option>
+                    <option value="Gachibowli">Gachibowli</option>
+                    <option value="Miyapur">Miyapur</option>
+                    <option value="Secunderabad">Secunderabad</option>
+                    <option value="Panjagutta">Panjagutta</option>
+                    <option value="Other">Other GHMC Area</option>
+                  </select>
+                </div>
+
+                <!-- Landmark -->
+                <div class="form-group">
+                  <label class="form-label" for="reportLandmark">Landmark / Nearest Junction</label>
+                  <input type="text" id="reportLandmark" class="form-control" placeholder="e.g. Under Tolichowki Flyover" />
+                </div>
+
+                <!-- Hazard Category -->
+                <div class="form-group">
+                  <label class="form-label" for="hazardCategory">
+                    <span>Hazard Category</span>
+                    <span class="required">*</span>
+                  </label>
+                  <select id="hazardCategory" class="form-control" required>
+                    <option value="Road waterlogging" selected>Road waterlogging</option>
+                    <option value="Severe flooding">Severe flooding</option>
+                    <option value="Drainage overflow">Drainage overflow</option>
+                    <option value="Underpass flooding">Underpass flooding</option>
+                    <option value="Blocked drainage">Blocked drainage</option>
+                    <option value="Other water-related hazards">Other water-related hazards</option>
+                  </select>
+                </div>
+
+                <!-- Estimated Depth -->
+                <div class="form-group">
+                  <label class="form-label" for="waterDepthCm">
+                    <span>Estimated Water Depth (cm)</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="number" id="waterDepthCm" class="form-control" min="0" max="200" value="35" required />
+                </div>
+
+                <!-- Severity Level -->
+                <div class="form-group form-grid-full">
+                  <label class="form-label" for="reportSeverity">
+                    <span>Severity Assessment</span>
+                    <span class="required">*</span>
+                  </label>
+                  <select id="reportSeverity" class="form-control" required>
+                    <option value="LOW">Low (Passable with caution, <15 cm)</option>
+                    <option value="MODERATE" selected>Moderate (Lane accumulation, 15 - 35 cm)</option>
+                    <option value="HIGH">High (Stalled vehicles, 35 - 60 cm)</option>
+                    <option value="CRITICAL">Critical (Impassable underpass, >60 cm)</option>
+                  </select>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group form-grid-full">
+                  <label class="form-label" for="reportDescription">Description of Road Conditions</label>
+                  <textarea id="reportDescription" class="form-control" placeholder="Describe the water stagnation, traffic impact, and whether vehicles are diverting..."></textarea>
+                </div>
+
+                <!-- Photo Upload with Preview -->
+                <div class="form-group form-grid-full">
+                  <label class="form-label">Photograph Upload (Optional)</label>
+                  <div class="upload-dropzone" id="photoDropzone">
+                    <input type="file" id="hazardPhotoInput" accept="image/*" />
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">
+                      <strong>Click to upload</strong> or drag and drop hazard photo<br/>
+                      <small style="color: #829AB1;">PNG, JPG, WebP up to 10MB</small>
+                    </div>
+                  </div>
+
+                  <div class="image-preview-container" id="photoPreviewContainer">
+                    <img id="photoPreviewImg" src="" alt="Hazard Preview" />
+                    <button type="button" class="remove-img-btn" id="removePhotoBtn">✕</button>
+                  </div>
+                </div>
+
+                <!-- Hidden Latitude and Longitude -->
+                <input type="hidden" id="reportLat" value="17.4011" />
+                <input type="hidden" id="reportLng" value="78.4124" />
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 15px; margin-top: 14px;">
+                🚀 Submit Report to GHMC
+              </button>
+            </form>
+          </div>
+
+          <!-- Location Picker Map Card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📍</span> Pinpoint Location on Map
+              </div>
+              <button id="btnReportLocateMe" class="btn btn-sm btn-secondary">Use GPS</button>
+            </div>
+
+            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+              Click on the map to pin the exact waterlogging spot:
+            </p>
+
+            <div style="height: 320px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-grey); margin-bottom: 12px;">
+              <div id="reportPickerMap" style="width: 100%; height: 100%;"></div>
+            </div>
+
+            <div style="background: var(--light-blue-surface); padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-grey); font-size: 12px;">
+              <strong id="reportCoordsText">Selected: 17.40110, 78.41240 (Tolichowki)</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Past Reports History Table -->
+        <section class="card" style="margin-top: 32px;">
+          <div class="card-header">
+            <div class="card-title">
+              <span>📋</span> Recent Citizen Submissions & Live Verification Status
+            </div>
+          </div>
+
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Report UID</th>
+                  <th>Locality</th>
+                  <th>Hazard Category</th>
+                  <th>Depth</th>
+                  <th>Severity</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="myReportsTableBody">
+                <!-- Dynamically populated by report.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Submission Confirmation Modal -->
+  <div class="modal-backdrop" id="reportConfirmModal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3>🎉 Incident Report Successfully Registered</h3>
+        <button class="modal-close" id="closeModalBtn">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+          Your hazard report has been recorded in the persistent MySQL database and queued for GHMC field engineer verification.
+        </p>
+
+        <div style="background: var(--light-blue-surface); border-radius: 8px; padding: 16px; border: 1px solid var(--border-grey); font-size: 13px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>Tracking UID:</span>
+            <strong id="modalReportUid" style="color: var(--navy); font-size: 15px;">HYD-2026-XXXX</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>Locality:</span>
+            <strong id="modalLocality">--</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>Hazard Type:</span>
+            <span id="modalHazard">--</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>Severity:</span>
+            <span id="modalSeverity" class="badge badge-high">--</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Status:</span>
+            <span id="modalStatus" class="badge badge-pending">PENDING VERIFICATION</span>
+          </div>
+        </div>
+
+        <p style="font-size: 12px; color: var(--text-muted);">
+          You can track this report in the Flood Dashboard or view it on the Interactive Map.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <a href="flood-map.html" class="btn btn-secondary">View on Map</a>
+        <button class="btn btn-primary" onclick="document.getElementById('reportConfirmModal').classList.remove('active')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/report.js"></script>
+</body>
+</html>

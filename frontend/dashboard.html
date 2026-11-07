@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Flood Dashboard - FLOODROUTE | Hyderabad GHMC</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">🌊</div>
+        <div class="brand-info">
+          <h2>FLOODROUTE</h2>
+          <span>Hyderabad GHMC</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Navigation</div>
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Home Overview</span>
+        </a>
+        <a href="dashboard.html" class="nav-item active">
+          <span class="nav-icon">📊</span>
+          <span>Flood Dashboard</span>
+        </a>
+        <a href="flood-map.html" class="nav-item">
+          <span class="nav-icon">🗺️</span>
+          <span>Interactive Map</span>
+        </a>
+        <a href="safe-routes.html" class="nav-item">
+          <span class="nav-icon">🚦</span>
+          <span>Safe Route Finder</span>
+        </a>
+
+        <div class="nav-section-title">Analysis & Tools</div>
+        <a href="risk-analysis.html" class="nav-item">
+          <span class="nav-icon">⚖️</span>
+          <span>Risk Engine Formula</span>
+        </a>
+        <a href="simulation.html" class="nav-item">
+          <span class="nav-icon">🌧️</span>
+          <span>Rainfall Simulator</span>
+        </a>
+        <a href="history.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Historical Trends</span>
+        </a>
+        <a href="alerts.html" class="nav-item">
+          <span class="nav-icon">🔔</span>
+          <span>Smart Flood Alerts</span>
+        </a>
+
+        <div class="nav-section-title">Actions</div>
+        <a href="report.html" class="nav-item">
+          <span class="nav-icon">📢</span>
+          <span>Report Waterlogging</span>
+        </a>
+        <a href="admin.html" id="adminNavItem" class="nav-item">
+          <span class="nav-icon">🛡️</span>
+          <span>Admin Moderation</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="user-meta">
+            <span class="user-name" id="sessionUserName">Guest Citizen</span>
+            <span class="user-role" id="sessionUserRole">Visitor</span>
+          </div>
+          <button id="logoutBtn" title="Sign Out" style="background: none; border: none; color: #9FB3C8; cursor: pointer; font-size: 16px;">⎋</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <!-- Topbar Header -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileMenuToggle">☰</button>
+          <div class="page-title">
+            <h1>Smart Urban Flood Dashboard</h1>
+            <p>Real-time waterlogging metrics, rainfall telemetry, and locality hazard statistics for Hyderabad</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="badge-live">
+            <span class="pulse-dot"></span> Live Telemetry
+          </div>
+          <a href="report.html" class="btn btn-sm btn-primary">+ Report Hazard</a>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Transparent Sample / Live Notice -->
+        <div class="disclaimer-banner">
+          <span style="font-size: 20px;">ℹ️</span>
+          <p>
+            <strong>Hydrological Intelligence Notice:</strong> Statistics are aggregated from GHMC field sensor reports, citizen submissions, and Open-Meteo meteorological data. Demonstration locations represent historically validated flood bottlenecks.
+          </p>
+        </div>
+
+        <!-- KPI Metrics Grid -->
+        <section class="dashboard-metrics-grid">
+          <div class="metric-card metric-info">
+            <div class="metric-icon-box">📍</div>
+            <div class="metric-data">
+              <h3 id="statTotalReports">10</h3>
+              <p>Total Reported Locations</p>
+              <div class="metric-subtext">Active across GHMC</div>
+            </div>
+          </div>
+
+          <div class="metric-card metric-critical">
+            <div class="metric-icon-box">⚠️</div>
+            <div class="metric-data">
+              <h3 id="statCriticalRisk">3</h3>
+              <p>Critical-Risk Underpasses</p>
+              <div class="metric-subtext">>60 cm stagnation depth</div>
+            </div>
+          </div>
+
+          <div class="metric-card metric-high">
+            <div class="metric-icon-box">🌊</div>
+            <div class="metric-data">
+              <h3 id="statHighRisk">2</h3>
+              <p>High-Risk Corridors</p>
+              <div class="metric-subtext">Severe waterlogging</div>
+            </div>
+          </div>
+
+          <div class="metric-card metric-moderate">
+            <div class="metric-icon-box">🌧️</div>
+            <div class="metric-data">
+              <h3 id="statModerateRisk">4</h3>
+              <p>Moderate-Risk Roads</p>
+              <div class="metric-subtext">Curbside ponding</div>
+            </div>
+          </div>
+
+          <div class="metric-card metric-safe">
+            <div class="metric-icon-box">🌦️</div>
+            <div class="metric-data">
+              <h3 id="statAvgRainfall">48.5 mm</h3>
+              <p>Avg Rainfall (GHMC AWS)</p>
+              <div class="metric-subtext" id="weatherCondition">Active Monsoon Rain</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Filters Bar -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <span class="filter-label">Filter by Locality:</span>
+            <select id="localityFilter" class="select-filter">
+              <option value="ALL">All GHMC Localities</option>
+              <option value="Tolichowki">Tolichowki</option>
+              <option value="Malakpet">Malakpet</option>
+              <option value="Begumpet">Begumpet</option>
+              <option value="LB Nagar">LB Nagar</option>
+              <option value="Kukatpally">Kukatpally</option>
+              <option value="Uppal">Uppal</option>
+              <option value="Ameerpet">Ameerpet</option>
+              <option value="Mehdipatnam">Mehdipatnam</option>
+              <option value="Gachibowli">Gachibowli</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Severity Level:</span>
+            <select id="severityFilter" class="select-filter">
+              <option value="ALL">All Risk Severities</option>
+              <option value="CRITICAL">Critical (Impassable)</option>
+              <option value="HIGH">High Risk</option>
+              <option value="MODERATE">Moderate Risk</option>
+              <option value="LOW">Low Risk</option>
+            </select>
+          </div>
+
+          <div style="font-size: 13px; color: var(--text-muted);">
+            Auto-refreshes with verified reports
+          </div>
+        </div>
+
+        <!-- Charts Grid (2x2 Layout) -->
+        <section class="charts-grid-2x2">
+          <!-- Locality Waterlogging Events (Bar Chart) -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📊</span> Area-Wise Reported Incidents
+              </div>
+              <span style="font-size: 12px; color: var(--text-muted);">GHMC Zones</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="localityChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Severity Breakdown (Doughnut Chart) -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span>🍩</span> Risk Severity Distribution
+              </div>
+              <span style="font-size: 12px; color: var(--text-muted);">Current Active Hazards</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="severityChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Monthly Historical Monsoon Trend (Line Chart) -->
+          <div class="card chart-card" style="grid-column: span 2;">
+            <div class="card-header">
+              <div class="card-title">
+                <span>📈</span> Monthly Flood Frequency vs Rainfall Correlation (Hyderabad Historical)
+              </div>
+              <span style="font-size: 12px; color: var(--text-muted);">June - November Monsoon Spectrum</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recently Reported Incidents Table -->
+        <section class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span>🚨</span> Recently Reported & Verified Waterlogging Incidents
+            </div>
+            <a href="flood-map.html" class="btn btn-sm btn-outline">View on GIS Map ➔</a>
+          </div>
+
+          <div class="data-table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Report UID</th>
+                  <th>Locality</th>
+                  <th>Landmark / Category</th>
+                  <th>Water Depth</th>
+                  <th>Severity</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recentReportsBody">
+                <!-- Dynamically populated by dashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-bottom">
+          <span>FLOODROUTE • Smart Urban Flood Platform</span>
+          <span>Greater Hyderabad Municipal Corporation (GHMC)</span>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

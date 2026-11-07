@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Flood Map - FLOODROUTE | Hyderabad GHMC</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">🌊</div>
+        <div class="brand-info">
+          <h2>FLOODROUTE</h2>
+          <span>Hyderabad GHMC</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Navigation</div>
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Home Overview</span>
+        </a>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Flood Dashboard</span>
+        </a>
+        <a href="flood-map.html" class="nav-item active">
+          <span class="nav-icon">🗺️</span>
+          <span>Interactive Map</span>
+        </a>
+        <a href="safe-routes.html" class="nav-item">
+          <span class="nav-icon">🚦</span>
+          <span>Safe Route Finder</span>
+        </a>
+
+        <div class="nav-section-title">Analysis & Tools</div>
+        <a href="risk-analysis.html" class="nav-item">
+          <span class="nav-icon">⚖️</span>
+          <span>Risk Engine Formula</span>
+        </a>
+        <a href="simulation.html" class="nav-item">
+          <span class="nav-icon">🌧️</span>
+          <span>Rainfall Simulator</span>
+        </a>
+        <a href="history.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Historical Trends</span>
+        </a>
+        <a href="alerts.html" class="nav-item">
+          <span class="nav-icon">🔔</span>
+          <span>Smart Flood Alerts</span>
+        </a>
+
+        <div class="nav-section-title">Actions</div>
+        <a href="report.html" class="nav-item">
+          <span class="nav-icon">📢</span>
+          <span>Report Waterlogging</span>
+        </a>
+        <a href="admin.html" id="adminNavItem" class="nav-item">
+          <span class="nav-icon">🛡️</span>
+          <span>Admin Moderation</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="user-meta">
+            <span class="user-name" id="sessionUserName">Guest Citizen</span>
+            <span class="user-role" id="sessionUserRole">Visitor</span>
+          </div>
+          <button id="logoutBtn" title="Sign Out" style="background: none; border: none; color: #9FB3C8; cursor: pointer; font-size: 16px;">⎋</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileMenuToggle">☰</button>
+          <div class="page-title">
+            <h1>Interactive Hyderabad Flood Map</h1>
+            <p>GIS visualization of waterlogged roads, catchment buffers, and severe underpasses</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <button id="btnLocateMe" class="btn btn-secondary btn-sm">📍 My Location</button>
+          <a href="safe-routes.html" class="btn btn-primary btn-sm">Plan Safe Route ➔</a>
+        </div>
+      </header>
+
+      <main class="content-body" style="padding-bottom: 12px;">
+        <!-- Disclaimer -->
+        <div class="disclaimer-banner" style="margin-bottom: 14px;">
+          <p>
+            <strong>GIS Data Transparency Notice:</strong> Demonstration locations and verified citizen reports represent flood-prone corridors in Hyderabad GHMC. Markers indicate reported water levels; avoid crossing submerged points.
+          </p>
+        </div>
+
+        <!-- Filter Chips Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-sm btn-outline filter-chip active" data-severity="ALL">All Hazards</button>
+            <button class="btn btn-sm btn-outline filter-chip" data-severity="CRITICAL">🔴 Critical Only</button>
+            <button class="btn btn-sm btn-outline filter-chip" data-severity="HIGH">🟠 High Risk</button>
+            <button class="btn btn-sm btn-outline filter-chip" data-severity="MODERATE">🟡 Moderate</button>
+            <button class="btn btn-sm btn-outline filter-chip" data-severity="LOW">🟢 Low / Clear</button>
+          </div>
+
+          <div style="font-size: 12px; color: var(--text-secondary);">
+            Click on map to drop custom pin • Coordinates: <strong id="selectedCoordinates">17.3850, 78.4867</strong>
+          </div>
+        </div>
+
+        <!-- Map & Split Sidebar Layout -->
+        <div class="map-page-layout">
+          <!-- Left Pane: Hazard Details & Incidents List -->
+          <div class="map-sidebar-pane">
+            <div class="pane-header">
+              <h3>Selected Hazard Details</h3>
+            </div>
+            <div class="pane-scroll">
+              <div id="hazardDetailBox">
+                <div class="empty-state" style="padding: 24px 12px;">
+                  <span style="font-size: 32px; display: block; margin-bottom: 8px;">🗺️</span>
+                  <p style="font-size: 13px;">Click on any map marker or select an incident from the list below to view detailed ground telemetry.</p>
+                </div>
+              </div>
+
+              <h4 style="font-size: 14px; font-weight: 700; color: var(--navy); margin: 16px 0 10px;">
+                Identified Waterlogged Localities
+              </h4>
+              <div id="incidentListPane">
+                <!-- Dynamically populated by map.js -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Leaflet Map Container -->
+          <div class="map-canvas-container">
+            <!-- Floating Locality Search Box -->
+            <div class="map-floating-panel">
+              <span>🔍</span>
+              <input type="text" id="mapSearchInput" class="map-search-input" placeholder="Search locality (e.g. Tolichowki, Malakpet)..." />
+            </div>
+
+            <!-- Leaflet Canvas -->
+            <div id="floodMap"></div>
+
+            <!-- Map Legend Overlay -->
+            <div class="map-legend-overlay">
+              <div class="legend-title">Risk Severity Index</div>
+              <div class="legend-item">
+                <div class="legend-color-box" style="background-color: var(--red);"></div>
+                <span>Critical (>60 cm, Impassable)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color-box" style="background-color: var(--orange);"></div>
+                <span>High (35 - 60 cm depth)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color-box" style="background-color: var(--amber);"></div>
+                <span>Moderate (15 - 35 cm depth)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color-box" style="background-color: var(--green);"></div>
+                <span>Low / Passable (<15 cm)</span>
+              </div>
+              <div class="legend-item" style="margin-top: 6px; border-top: 1px solid var(--border-grey); padding-top: 6px;">
+                <div style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid #D94D4D; background: rgba(217, 77, 77, 0.2);"></div>
+                <span>Clustered Hotspot Catchment</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/map.js"></script>
+</body>
+</html>
